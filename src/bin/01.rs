@@ -1,14 +1,10 @@
 use advent_of_code::helpers::sum_list;
 use itertools::Itertools;
 
-//fn print_type_of<T>(_: &T) {
-//    println!("{}", std::any::type_name::<T>())
-//}
-
 pub fn part_one(input: &str) -> Option<u32> {
     let split = input.split("\n\n");
     let n = split.clone().count();
-    let mut arr = vec![0; n]; //split.size_hint()];
+    let mut arr = vec![0; n];
 
 
     for (idx, s) in split.enumerate() {
@@ -21,7 +17,7 @@ pub fn part_one(input: &str) -> Option<u32> {
 pub fn part_two(input: &str) -> Option<u32> {
     let split = input.split("\n\n");
     let n = split.clone().count();
-    let mut arr = vec![0; n]; //split.size_hint()];
+    let mut arr = vec![0; n];
 
 
     for (idx, s) in split.enumerate() {
@@ -29,10 +25,6 @@ pub fn part_two(input: &str) -> Option<u32> {
     }
 
     Some(arr.iter().sorted().rev().take(3).sum())
-
-    //arr.sort();
-
-    //Some(arr[n-1]+arr[n-2]+arr[n-3])
 }
 
 fn main() {
