@@ -19,15 +19,30 @@ macro_rules! solve {
         use std::fmt::Display;
         use std::time::Instant;
 
-        fn print_result<T: Display>(func: impl FnOnce(&str) -> Option<T>, input: &str) {
-            let timer = Instant::now();
+        fn print_result<T: Display>(func: impl Fn(&str) -> Option<T>, input: &str) {
+            let mut timer = Instant::now();
             let result = func(input);
-            let elapsed = timer.elapsed();
+            let mut elapsed = timer.elapsed();
+
+            let mut num_runs: u32=1;
+
+            let min_time: f32=2.0;
+            if &elapsed.as_secs_f32()<&min_time{
+                num_runs = (5.0/&elapsed.as_secs_f32()) as u32;
+                timer = Instant::now();
+                for i in 0..num_runs{
+                    func(input);
+                }
+                elapsed = timer.elapsed() / num_runs;
+            } else{
+                num_runs = 1;
+            }
+
             match result {
                 Some(result) => {
                     println!(
-                        "{} {}(elapsed: {:.2?}){}",
-                        result, ANSI_ITALIC, elapsed, ANSI_RESET
+                        "{} {}(elapsed: {:.2?}) (average from {} runs){}",
+                        result, ANSI_ITALIC, elapsed, num_runs, ANSI_RESET
                     );
                 }
                 None => {
