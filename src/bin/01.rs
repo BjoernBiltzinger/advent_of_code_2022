@@ -39,13 +39,13 @@ mod tests {
 
     #[test]
     fn test_part_one() {
-        let input = advent_of_code::read_file("examples", 1);
-        assert_eq!(part_one(&input), None);
+        let input = &advent_of_code::read_file("inputs", 1);
+        assert_eq!(part_one(&input), Some(67633));
     }
 
     #[test]
     fn test_part_two() {
-        let input = advent_of_code::read_file("examples", 1);
-        assert_eq!(part_two(&input), None);
+        let input = &advent_of_code::read_file("inputs", 1);
+        assert_eq!(part_two(&input), Some(199628));
     }
 }
