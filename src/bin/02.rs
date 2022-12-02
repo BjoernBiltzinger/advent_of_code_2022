@@ -52,66 +52,37 @@ pub fn part_two_clean_but_slow(input: &str) -> Option<u32> {
 
 pub fn lookup1(x: &str) -> u32{
 
-    if x=="A X"{
-        return 4;
+    match x {
+
+        "A X" => 4,
+        "B X" => 1,
+        "C X" => 7,
+        "A Y" => 8,
+        "B Y" => 5,
+        "C Y" => 2,
+        "A Z" => 3,
+        "B Z" => 9,
+        "C Z" => 6,
+        _ => 0
     }
-    if x=="B X"{
-        return 1;
-    }
-    if x=="C X"{
-        return 7;
-    }
-    if x=="A Y"{
-        return 8;
-    }
-    if x=="B Y"{
-        return 5;
-    }
-    if x=="C Y"{
-        return 2;
-    }
-    if x=="A Z"{
-        return 3;
-    }
-    if x=="B Z"{
-        return 9;
-    }
-    if x=="C Z"{
-        return 6;
-    }
-    return 0;
+
 }
 
 pub fn lookup2(x: &str) -> u32{
 
-    if x=="A X"{
-        return 3;
+    match x {
+
+        "A X" => 3,
+        "B X" => 1,
+        "C X" => 2,
+        "A Y" => 4,
+        "B Y" => 5,
+        "C Y" => 6,
+        "A Z" => 8,
+        "B Z" => 9,
+        "C Z" => 7,
+        _ => 0
     }
-    if x=="B X"{
-        return 1;
-    }
-    if x=="C X"{
-        return 2;
-    }
-    if x=="A Y"{
-        return 4;
-    }
-    if x=="B Y"{
-        return 5;
-    }
-    if x=="C Y"{
-        return 6;
-    }
-    if x=="A Z"{
-        return 8;
-    }
-    if x=="B Z"{
-        return 9;
-    }
-    if x=="C Z"{
-        return 7;
-    }
-    return 0;
 }
 
 pub fn part_one(input: &str) -> Option<u32> {
