@@ -1,3 +1,5 @@
+use itertools::Itertools;
+
 pub fn value(input: &char) -> u32 {
     let mut val = input.to_digit(36).unwrap()-9;
     if input.is_ascii_uppercase(){
@@ -50,16 +52,16 @@ pub fn part_one(input: &str) -> Option<u32> {
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    let mut lines = input.lines();
-    let length = &lines.clone().count();
-    let mut c: char;
-    let mut v = 0;
-    for i in 0..length/3{
-        let (string1, string2, string3) = (&lines.next(), &lines.next(), &lines.next());
-        c = find_char2(string1.unwrap(), string2.unwrap(), string3.unwrap());
-        v += value(&c);
-    }
-    Some(v)
+    Some(
+        input.lines().chunks(3).into_iter().map(
+            |mut ls| {
+                let c = find_char2(ls.next().unwrap(),
+                                   ls.next().unwrap(),
+                                   ls.next().unwrap());
+                value(&c)
+            }
+        ).sum()
+    )
 }
 
 fn main() {
