@@ -3,58 +3,17 @@
  * There is no need to edit this file unless you want to change template functionality.
  * Prefer `./helpers.rs` if you want to extract code from your solutions.
  */
+use std::cmp;
 use std::env;
 use std::fs;
+use std::io::{stdout, Write};
+use std::time::{Duration, Instant};
 
 pub mod helpers;
 
 pub const ANSI_ITALIC: &str = "\x1b[3m";
 pub const ANSI_BOLD: &str = "\x1b[1m";
 pub const ANSI_RESET: &str = "\x1b[0m";
-
-#[macro_export]
-macro_rules! solve {
-    ($part:expr, $solver:ident, $input:expr) => {{
-        use advent_of_code::{ANSI_BOLD, ANSI_ITALIC, ANSI_RESET};
-        use std::fmt::Display;
-        use std::time::Instant;
-
-        fn print_result<T: Display>(func: impl Fn(&str) -> Option<T>, input: &str) {
-            let mut timer = Instant::now();
-            let result = func(input);
-            let mut elapsed = timer.elapsed();
-
-            let mut num_runs: u32=1;
-
-            let min_time: f32=2.0;
-            if &elapsed.as_secs_f32()<&min_time{
-                num_runs = (5.0/&elapsed.as_secs_f32()) as u32;
-                timer = Instant::now();
-                for i in 0..num_runs{
-                    func(input);
-                }
-                elapsed = timer.elapsed() / num_runs;
-            } else{
-                num_runs = 1;
-            }
-
-            match result {
-                Some(result) => {
-                    println!(
-                        "{} {}(elapsed: {:.2?}) (average from {} runs){}",
-                        result, ANSI_ITALIC, elapsed, num_runs, ANSI_RESET
-                    );
-                }
-                None => {
-                    println!("not solved.")
-                }
-            }
-        }
-
-        println!("🎄 {}Part {}{} 🎄", ANSI_BOLD, $part, ANSI_RESET);
-        print_result($solver, $input);
-    }};
-}
 
 pub fn read_file(folder: &str, day: u8) -> String {
     let cwd = env::current_dir().unwrap();
@@ -65,31 +24,128 @@ pub fn read_file(folder: &str, day: u8) -> String {
     f.expect("could not open input file")
 }
 
+fn average_duration(numbers: &[Duration]) -> u128 {
+    numbers.iter().map(|d| d.as_nanos()).sum::<u128>() / numbers.len() as u128
+}
+
+fn format_duration(duration: &Duration, iterations: u64) -> String {
+    format!(
+        "{}(avg. time: {:.2?} / {} samples){}",
+        ANSI_ITALIC, duration, iterations, ANSI_RESET
+    )
+}
+
+pub fn bench<I: Copy, T>(func: impl Fn(I) -> T, input: I, base_time: &Duration) -> String {
+    let mut stdout = stdout();
+
+    print!("> {}benchmarking...{}", ANSI_ITALIC, ANSI_RESET);
+    let _ = stdout.flush();
+
+    let bench_iterations = cmp::max(
+        Duration::from_secs(2).as_nanos() / cmp::max(base_time.as_nanos(), 5),
+        10,
+    );
+
+    let mut timers: Vec<Duration> = vec![];
+
+    for _ in 0..bench_iterations {
+        let timer = Instant::now();
+        func(input);
+        timers.push(timer.elapsed());
+    }
+
+    print!("\r");
+
+    let avg_time = Duration::from_nanos(average_duration(&timers) as u64);
+    format_duration(&avg_time, bench_iterations as u64)
+}
+
 fn parse_time(val: &str, postfix: &str) -> f64 {
     val.split(postfix).next().unwrap().parse().unwrap()
 }
 
 pub fn parse_exec_time(output: &str) -> f64 {
     output.lines().fold(0_f64, |acc, l| {
-        if !l.contains("elapsed:") {
+        if !l.contains("avg. time:") {
             acc
         } else {
-            let timing = l.split("(elapsed: ").last().unwrap();
+            let timing = l.split("(avg. time: ").last().unwrap();
             // use `contains` istd. of `ends_with`: string may contain ANSI escape sequences.
             // for possible time formats, see: https://github.com/rust-lang/rust/blob/1.64.0/library/core/src/time.rs#L1176-L1200
-            if timing.contains("ns)") {
+            if timing.contains("ns /") {
                 acc // range below rounding precision.
-            } else if timing.contains("µs)") {
-                acc + parse_time(timing, "µs") / 1000_f64
-            } else if timing.contains("ms)") {
-                acc + parse_time(timing, "ms")
-            } else if timing.contains("s)") {
-                acc + parse_time(timing, "s") * 1000_f64
+            } else if timing.contains("µs /") {
+                acc + parse_time(timing, "µs /") / 1000_f64
+            } else if timing.contains("ms /") {
+                acc + parse_time(timing, "ms /")
+            } else if timing.contains("s /") {
+                acc + parse_time(timing, "s /") * 1000_f64
             } else {
                 acc
             }
         }
     })
+}
+
+#[macro_export]
+macro_rules! parse {
+    ($parser:ident, $input:expr) => {{
+        use advent_of_code::{ANSI_BOLD, ANSI_ITALIC, ANSI_RESET};
+        use std::time::Instant;
+
+        let timer = Instant::now();
+        let result = $parser($input);
+        let base_time = timer.elapsed();
+
+        if $input != "" {
+            println!("🎄 {}Parser{} 🎄", ANSI_BOLD, ANSI_RESET);
+            let time = advent_of_code::bench($parser, $input, &base_time);
+            println!("✓ {}", time);
+        }
+
+        result
+    }};
+}
+
+#[macro_export]
+macro_rules! solve {
+    ($part:expr, $solver:ident, $input:expr) => {{
+        use advent_of_code::{ANSI_BOLD, ANSI_ITALIC, ANSI_RESET};
+        use std::fmt::Display;
+        use std::time::Instant;
+
+        println!("🎄 {}Part {}{} 🎄", ANSI_BOLD, $part, ANSI_RESET);
+
+        let timer = Instant::now();
+        let result = $solver($input);
+        let base_time = timer.elapsed();
+
+        match result {
+            Some(result) => {
+                print!("{} ", result);
+                println!(
+                    "{} {}",
+                    result,
+                    advent_of_code::bench($solver, $input, &base_time)
+                );
+            }
+            None => {
+                print!("not solved.")
+            }
+        }
+    }};
+}
+
+#[macro_export]
+macro_rules! main {
+    ($day:expr) => {
+        fn main() {
+            let input = advent_of_code::read_file("inputs", $day);
+            let parsed = advent_of_code::parse!(parse, &input);
+            advent_of_code::solve!(1, part_one, &parsed);
+            advent_of_code::solve!(2, part_two, &parsed);
+        }
+    };
 }
 
 /// copied from: https://github.com/rust-lang/rust/blob/1.64.0/library/std/src/macros.rs#L328-L333
@@ -114,25 +170,25 @@ mod tests {
     fn test_parse_exec_time() {
         assert_approx_eq!(
             parse_exec_time(&format!(
-                "🎄 Part 1 🎄\n0 (elapsed: 74.13ns){}\n🎄 Part 2 🎄\n0 (elapsed: 50.00ns){}",
+                "🎄 Part 1 🎄\n0 (avg. time: 74.13ns / 10000 samples){}\n🎄 Part 2 🎄\n0 (avg. time: 50ns / 10000 samples){}",
                 ANSI_RESET, ANSI_RESET
             )),
             0_f64
         );
 
         assert_approx_eq!(
-            parse_exec_time("🎄 Part 1 🎄\n0 (elapsed: 755µs)\n🎄 Part 2 🎄\n0 (elapsed: 700µs)"),
+            parse_exec_time("🎄 Part 1 🎄\n0 (avg. time: 755µs / 10000 samples)\n🎄 Part 2 🎄\n0 (avg. time: 700µs / 9000 samples)"),
             1.455_f64
         );
 
         assert_approx_eq!(
-            parse_exec_time("🎄 Part 1 🎄\n0 (elapsed: 70µs)\n🎄 Part 2 🎄\n0 (elapsed: 1.45ms)"),
+            parse_exec_time("🎄 Part 1 🎄\n0 (avg. time: 70µs / 100 samples)\n🎄 Part 2 🎄\n0 (avg. time: 1.45ms / 10 samples)"),
             1.52_f64
         );
 
         assert_approx_eq!(
             parse_exec_time(
-                "🎄 Part 1 🎄\n0 (elapsed: 10.3s)\n🎄 Part 2 🎄\n0 (elapsed: 100.50ms)"
+                "🎄 Part 1 🎄\n0 (avg. time: 10.3s / 1 samples)\n🎄 Part 2 🎄\n0 (avg. time: 100.50ms / 0 samples)"
             ),
             10400.50_f64
         );
