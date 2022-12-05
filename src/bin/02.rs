@@ -39,12 +39,12 @@ lazy_static! {
 }
 
 pub fn part_one_clean_but_slow(input: &str) -> Option<u32> {
-    input.split("\n").map(|g| SCORE.get(g)).sum()
+    input.split('\n').map(|g| SCORE.get(g)).sum()
 }
 
 pub fn part_two_clean_but_slow(input: &str) -> Option<u32> {
 
-    input.split("\n").map(|g| SCORE2.get(g)).sum()
+    input.split('\n').map(|g| SCORE2.get(g)).sum()
 
 }
 
@@ -86,12 +86,12 @@ pub fn lookup2(x: &str) -> u32{
 }
 
 pub fn part_one(input: &str) -> Option<u32> {
-    Some(input.split("\n").map(|g| lookup1(g)).sum())
+    Some(input.split('\n').map(|g| lookup1(g)).sum())
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
 
-    Some(input.split("\n").map(|g| lookup2(g)).sum())
+    Some(input.split('\n').map(|g| lookup2(g)).sum())
 
 }
 
