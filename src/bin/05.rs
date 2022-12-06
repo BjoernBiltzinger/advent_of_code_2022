@@ -2,18 +2,20 @@ use regex::Regex;
 
 pub fn get_start_vec(input: &str) -> Vec<(String)> {
     let lines= input.lines().rev().skip(1).map(|l| l.chars());
-    let num_columns = (&lines.clone().last().unwrap().count()+1)/4;
+    let num_columns = (&lines.clone().next().unwrap().count()+1)/4;
     let mut crates = Vec::new();
     for i in 0..num_columns{
         crates.push(String::from(""))
     }
-    let mut c: char;
+    let mut c: Option<char>;
     for col in (0..num_columns) {
 
         for mut line in lines.clone() {
-            c = line.nth(col*4+1).unwrap();
-            if c != ' '{
-                crates.get_mut(col).unwrap().push(c);
+            c = line.nth(col*4+1);
+            if c.is_some(){
+                if c.unwrap() != ' '{
+                    crates.get_mut(col).unwrap().push(c.unwrap());
+                }
             } else {
                 break
             }
@@ -45,9 +47,8 @@ pub fn update_crates(mut crates: &mut Vec<(String)>, amount: u8, from: usize, to
     for _ in 0..amount {
         move_string.push(from_string.pop().unwrap());
     }
-
     let to_string = crates.get_mut(to).unwrap();
-    let mut chars = move_string.chars();
+    //let chars = move_string.chars();
     if part == 1 {
         for c in move_string.chars(){
             to_string.push(c);
