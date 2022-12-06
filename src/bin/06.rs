@@ -30,39 +30,11 @@ pub fn part_two_simple(input: &str) -> Option<usize> {
 
 // Optimized version with a advanced search algorithm
 
-// this solution with the  advanced search algorithm
-// but with sub strings is also not optimal
-pub fn run_with_string(input: &str, len_string: usize) -> Option<usize> {
-    let mut sub_slice: String;
+// using a char vector, loop over the indicies and get the values from the vec is
+// faster than using sliced strings.
 
-    let mut start_id = 0;
-    let mut found = false;
-
-    while !found {
-        found = true;
-        sub_slice = input[start_id..start_id+len_string].to_string();
-        for (n, c1) in sub_slice.chars().rev().skip(1).enumerate(){
-            for c2 in sub_slice.chars().skip(len_string-1-n){
-                if c1==c2 {
-                    start_id += len_string-1-n;
-                    found = false;
-                    break;
-                }
-            }
-            if !found {
-                break;
-            }
-        }
-        if found {
-            return Some(start_id+len_string);
-        }
-    }
-    None
-}
-
-// using a char vector, loop over the indicies and get the values from the vec seems to be faster
-// makes the search for the long string much faster (factor ~7) compared to the simple approach
-// Always use chars instead of strings if possible!
+// makes the search for the long string much faster (factor ~7) compared
+// to the simple approach
 pub fn run(input: &str, len_string: usize) -> Option<usize> {
     let chars: Input = input.chars().collect();
 
