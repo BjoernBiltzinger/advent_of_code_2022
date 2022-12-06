@@ -22,7 +22,7 @@ pub fn run_simple(input: &str, len_string: usize) -> Option<usize> {
             return Some(start_id+len_string);
         }
     }
-    panic!("This should not happen")
+    unreachable!()
 }
 
 pub fn part_one_simple(input: &str) -> Option<usize> {
@@ -64,7 +64,7 @@ pub fn run(input: &str, len_string: usize) -> Option<usize> {
             return Some(start_id+len_string);
         }
     }
-    panic!("This should not happen")
+    unreachable!()
 }
 
 pub fn part_one(input: &str) -> Option<usize> {
