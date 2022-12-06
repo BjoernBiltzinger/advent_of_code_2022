@@ -1,23 +1,28 @@
-use itertools::Itertools;
-
-type Input<'a> = Vec<char>;
-
 // first simple solution - simple search algorithm
 
 pub fn run_simple(input: &str, len_string: usize) -> Option<usize> {
-    input.chars().collect::<Input>()
-        .windows(len_string)
-        .find_position(|cs| {
-            for n in 0..len_string{
-                for m in n+1..len_string{
-                    if cs[n]==cs[m]{
-                        return false;
-                     }
+    let chars: Vec<char> = input.chars().collect();
+
+    let mut found;
+
+    for start_id in 0..chars.len(){
+        found = true;
+        for n in 0..len_string{
+            for m in n+1..len_string{
+                if chars[start_id+n]==chars[start_id+m] {
+                    found = false;
+                    break;
                 }
             }
-            true
-        })
-        .map(|(pos, _)| pos + len_string)
+            if !found {
+                break;
+            }
+        }
+        if found {
+            return Some(start_id+len_string);
+        }
+    }
+    panic!("This should not happen")
 }
 
 pub fn part_one_simple(input: &str) -> Option<usize> {
@@ -33,10 +38,10 @@ pub fn part_two_simple(input: &str) -> Option<usize> {
 // using a char vector, loop over the indicies and get the values from the vec is
 // faster than using sliced strings.
 
-// makes the search for the long string much faster (factor ~7) compared
+// makes the search for the long string much faster (factor ~10) compared
 // to the simple approach
 pub fn run(input: &str, len_string: usize) -> Option<usize> {
-    let chars: Input = input.chars().collect();
+    let chars: Vec<char> = input.chars().collect();
 
     let mut start_id = 0;
     let mut found = false;
@@ -59,7 +64,7 @@ pub fn run(input: &str, len_string: usize) -> Option<usize> {
             return Some(start_id+len_string);
         }
     }
-    None
+    panic!("This should not happen")
 }
 
 pub fn part_one(input: &str) -> Option<usize> {
