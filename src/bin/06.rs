@@ -76,7 +76,7 @@ pub fn part_two(input: &str) -> Option<usize> {
 }
 
 fn main() {
-    let input = &advent_of_code::read_file("inputs", 6);
+    let input = &advent_of_code::read_file("inputs", 6, None);
 
     advent_of_code::solve!("1 simple search algorithm", part_one_simple, input);
     advent_of_code::solve!("2 simple search algorithm", part_two_simple, input);
@@ -91,13 +91,13 @@ mod tests {
 
     #[test]
     fn test_part_one() {
-        let input = advent_of_code::read_file("examples", 6);
+        let input = advent_of_code::read_file("examples", 6, None);
         assert_eq!(part_one(&input), Some(7));
     }
 
     #[test]
     fn test_part_two() {
-        let input = advent_of_code::read_file("examples", 6);
+        let input = advent_of_code::read_file("examples", 6, None);
         assert_eq!(part_two(&input), Some(19));
     }
 }

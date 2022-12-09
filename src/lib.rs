@@ -15,11 +15,17 @@ pub const ANSI_ITALIC: &str = "\x1b[3m";
 pub const ANSI_BOLD: &str = "\x1b[1m";
 pub const ANSI_RESET: &str = "\x1b[0m";
 
-pub fn read_file(folder: &str, day: u8) -> String {
+pub fn read_file(folder: &str, day: u8, part: Option<u8>) -> String {
     let cwd = env::current_dir().unwrap();
-
-    let filepath = cwd.join("src").join(folder).join(format!("{:02}.txt", day));
-
+    let filepath;
+    if part.is_some(){
+        filepath = cwd.join("src").join(folder).join(format!("{:02}_{:01}.txt",
+                                                             day,
+                                                             part.unwrap()));
+    } else {
+        filepath = cwd.join("src").join(folder).join(format!("{:02}.txt",
+                                                             day));
+    }
     let f = fs::read_to_string(filepath);
     f.expect("could not open input file")
 }

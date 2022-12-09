@@ -1,3 +1,4 @@
+/*
 use petgraph::graph::{NodeIndex, Graph};
 use petgraph::Direction;
 use petgraph::dot::{Dot, Config};
@@ -9,7 +10,6 @@ struct FILE{
     //name: &'static str,
     size: u32,
 }
-
 fn get_sum_dirs<'a>(g: &Graph::<(&'static str, Vec<u32>), ()>, current_node: NodeIndex) -> (u32, u32){
     // recursive call to child nodes
     let (mut sum, mut valid_sum) = (0, 0);
@@ -119,7 +119,7 @@ fn main() {
         println!("{:?}", g[node].0);
     }
 }
-
+*/
 /*
 struct FILE{
     name: String,
@@ -258,20 +258,35 @@ fn main() {
     //advent_of_code::solve!(1, part_one, input);
     //advent_of_code::solve!(2, part_two, input);
 }
-*/
+ */
+pub fn part_one(input: &str) -> Option<u32> {
+    None
+}
+
+pub fn part_two(input: &str) -> Option<u32> {
+    None
+}
+
+fn main() {
+    let input = &advent_of_code::read_file("inputs", 9, None);
+    advent_of_code::solve!(1, part_one, input);
+    advent_of_code::solve!(2, part_two, input);
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_part_one() {
-        let input = advent_of_code::read_file("examples", 7);
+        let input = advent_of_code::read_file("examples", 7, None);
         assert_eq!(part_one(&input), None);
     }
 
     #[test]
     fn test_part_two() {
-        let input = advent_of_code::read_file("examples", 7);
+        let input = advent_of_code::read_file("examples", 7, None);
         assert_eq!(part_two(&input), None);
     }
 }
