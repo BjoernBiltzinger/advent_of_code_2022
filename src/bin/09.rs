@@ -1,7 +1,6 @@
 use itertools::Itertools;
 
 pub fn move_head(mut current_pos: (i16, i16), dir: &str) -> (i16, i16){
-    //println!("{:?}", current_pos.1-1);
     match dir {
         "U" => current_pos.1 += 1,
         "D" => current_pos.1 -= 1,
