@@ -1,4 +1,5 @@
 use itertools::Itertools;
+use std::cmp;
 
 pub fn move_head(mut current_pos: (i16, i16), dir: &str) -> (i16, i16){
     match dir {
@@ -11,7 +12,7 @@ pub fn move_head(mut current_pos: (i16, i16), dir: &str) -> (i16, i16){
     current_pos
 }
 
-pub fn move_tail(mut current_pos: (i16, i16), head_pos: &(i16, i16), dir: &str) -> (i16, i16){
+pub fn move_tail_old(mut current_pos: (i16, i16), head_pos: &(i16, i16)) -> (i16, i16){
 
     let x_diff = head_pos.0-current_pos.0;
     let y_diff = head_pos.1-current_pos.1;
@@ -55,6 +56,14 @@ pub fn move_tail(mut current_pos: (i16, i16), head_pos: &(i16, i16), dir: &str) 
     current_pos
 }
 
+pub fn move_tail(mut current_pos: (i16, i16), head_pos: &(i16, i16)) -> (i16, i16){
+    if (head_pos.0-current_pos.0).abs()>1 || (head_pos.1-current_pos.1).abs()>1{
+        current_pos.0 += cmp::max(cmp::min(head_pos.0-current_pos.0, 1), -1);
+        current_pos.1 += cmp::max(cmp::min(head_pos.1-current_pos.1, 1), -1);
+    }
+    current_pos
+}
+
 pub fn simulate(input: &str, num_knots: usize) -> Option<usize>{
 
     let mut all_tail_pos: Vec<(i16,i16)> = vec![(0,0)];
@@ -71,8 +80,7 @@ pub fn simulate(input: &str, num_knots: usize) -> Option<usize>{
             // iteratively update the following positions
             for i in 1..num_knots{
                 knot_positions[i] = move_tail(knot_positions[i],
-                                              &knot_positions[i-1],
-                                              dir);
+                                              &knot_positions[i-1]);
             }
             // save the tail positions
             all_tail_pos.push(knot_positions[num_knots-1]);
